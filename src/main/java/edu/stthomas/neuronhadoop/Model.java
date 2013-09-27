@@ -94,6 +94,8 @@ public class Model extends Configured implements Tool {
 			job.setOutputKeyClass(IntWritable.class);
 			job.setOutputValueClass(LongWritable.class);
 			
+			job.setNumReduceTasks(1);
+			
 			success = job.waitForCompletion(true);
 		}
 		
