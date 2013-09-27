@@ -27,6 +27,7 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	private String input_line; // original input
 	private String update; // hold updated neuronal information.
 	private LongWritable neuron_id = new LongWritable();
+	private Text neuron_string = new Text();
 
 	private double getGaussian() {
 		return randn.nextGaussian();
@@ -89,6 +90,7 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		// Construct the key
 		neuron_id.set(neuron.id);
 		// At last, emit the updated data structure of the neuron as the value.
-		context.write(neuron_id, new Text(update));
+		neuron_string.set(update);
+		context.write(neuron_id, neuron_string);
 	}
 }

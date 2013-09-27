@@ -14,7 +14,8 @@ public class SynapticWeightsReducer
 extends Reducer<LongWritable, Text, NullWritable, Text> {
 
 	private Neuron neuron; // Complex object used to store recoveried neuron data structure. 
-
+	private Text neuron_string = new Text();
+	
 	/*
 	 * Decide if a string 'line' represents a neuron data structure
 	 * or just a synaptic connection weight (in this case, 
@@ -54,6 +55,7 @@ extends Reducer<LongWritable, Text, NullWritable, Text> {
 		String update = neuron.toLineFormat();
 
 		// Emit, key is null because neuron id is aleardy inside the value.
-		context.write(NullWritable.get(), new Text(update));
+		neuron_string.set(update);
+		context.write(NullWritable.get(), neuron_string);
 	}
 }

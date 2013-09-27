@@ -4,6 +4,7 @@ package edu.stthomas.neuronhadoop;
  */ 
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -18,12 +19,13 @@ public class Model extends Configured implements Tool {
 	private String IN;
 	private String OUT;
 	public final static int NUM_OF_NEURONS = 500;
-	public final static int TIME_IN_MS = 100;
+	public final static int TIME_IN_MS = 20;
 
 	public int run(String[] args) throws Exception {
 
-		if (args.length != 2) {
-			System.err.println("Usage: Model <input path> <output path>");
+		if (args.length != 3) {
+			System.err.println("Usage: Model <input path> " +
+					"<output path for neuron structure> <output path for firing extraction>");
 			System.exit(-1);
 		}
 
@@ -67,6 +69,34 @@ public class Model extends Configured implements Tool {
 			timer++;
 			outpath = OUT + timer;
 		}
+		
+		/*
+		 * Start jobs for post-analysis
+		 */
+		if (success == true) {
+			String inpaths = new String(); // used to construct a comma separated input paths.
+			
+			for (int i = 1; i < TIME_IN_MS; i++) {
+			    inpaths += "out-dir" + i + ",";
+			}
+			inpaths += "out-dir" + TIME_IN_MS;
+				
+			Job job = new Job(getConf());
+			job.setJarByClass(Model.class);
+			job.setJobName("Fired Neurons Extraction");
+
+			FileInputFormat.addInputPaths(job, inpaths);
+			FileOutputFormat.setOutputPath(job, new Path(args[2]));
+
+			job.setMapperClass(FiredNeuronsMapper.class);
+			job.setReducerClass(FiredNeuronsReducer.class);
+
+			job.setOutputKeyClass(IntWritable.class);
+			job.setOutputValueClass(LongWritable.class);
+			
+			success = job.waitForCompletion(true);
+		}
+		
 		return (success ? 0 : 1);
 	}
 
