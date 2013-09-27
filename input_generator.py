@@ -102,8 +102,8 @@ def get_weights(num_of_neurons, neuron_type):
 
     
 def main():
-    Ne = 10000 # Number of Excitatory neurons
-    Ni = 2500 # Number of Inhibitory neurons
+    Ne = 400 # Number of Excitatory neurons
+    Ni = 100 # Number of Inhibitory neurons
 
     SUM = 0 # Initial summation of synaptic connection is 0.
 
