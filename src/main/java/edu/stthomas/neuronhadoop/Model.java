@@ -19,13 +19,16 @@ public class Model extends Configured implements Tool {
 	private String IN;
 	private String OUT;
 	public final static int NUM_OF_NEURONS = 500;
-	public final static int TIME_IN_MS = 20;
+	public final static int TIME_IN_MS = 200;
 
 	public int run(String[] args) throws Exception {
 
-		if (args.length != 3) {
+		if (args.length != 5) {
 			System.err.println("Usage: Model <input path> " +
-					"<output path for neuron structure> <output path for firing extraction>");
+					"<output path for neuron structure>" +
+					"<output path for firing extraction>" +
+					"<output path for membrane potential>" +
+					"<output path for recovery variable>");
 			System.exit(-1);
 		}
 
