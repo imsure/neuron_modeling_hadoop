@@ -73,14 +73,14 @@ public class Model extends Configured implements Tool {
 		/*
 		 * Start jobs for post-analysis
 		 */
-		if (success == true) {
-			String inpaths = new String(); // used to construct a comma separated input paths.
-			
-			for (int i = 1; i < TIME_IN_MS; i++) {
-			    inpaths += "out-dir" + i + ",";
-			}
-			inpaths += "out-dir" + TIME_IN_MS;
-				
+		String inpaths = new String(); // used to construct a comma separated input paths.
+		
+		for (int i = 1; i < TIME_IN_MS; i++) {
+		    inpaths += "out-dir" + i + ",";
+		}
+		inpaths += "out-dir" + TIME_IN_MS;
+		
+		if (success == true) {				
 			Job job = new Job(getConf());
 			job.setJarByClass(Model.class);
 			job.setJobName("Fired Neurons Extraction");
@@ -93,6 +93,25 @@ public class Model extends Configured implements Tool {
 
 			job.setOutputKeyClass(IntWritable.class);
 			job.setOutputValueClass(LongWritable.class);
+			
+			job.setNumReduceTasks(1);
+			
+			success = job.waitForCompletion(true);
+		}
+		
+		if (success == true) {				
+			Job job = new Job(getConf());
+			job.setJarByClass(Model.class);
+			job.setJobName("Membrane Potentials Extraction");
+
+			FileInputFormat.addInputPaths(job, inpaths);
+			FileOutputFormat.setOutputPath(job, new Path(args[3]));
+
+			job.setMapperClass(VCMapper.class);
+			job.setReducerClass(VCReducer.class);
+
+			job.setOutputKeyClass(LongWritable.class);
+			job.setOutputValueClass(Text.class);
 			
 			job.setNumReduceTasks(1);
 			

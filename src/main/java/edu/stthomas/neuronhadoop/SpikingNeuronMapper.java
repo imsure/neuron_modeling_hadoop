@@ -22,7 +22,7 @@ import java.util.*;
 public class SpikingNeuronMapper 
 extends Mapper<LongWritable, Text, LongWritable, Text> {
 
-	private Neuron neuron; // Complex object represents neuronal structure.
+	private Neuron neuron = new Neuron(); // Complex object represents neuronal structure.
 	private Random randn = new Random();
 	private String input_line; // original input
 	private String update; // hold updated neuronal information.
@@ -41,7 +41,7 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 			throws IOException, InterruptedException {
 
 		input_line = value.toString();
-		neuron = new Neuron(input_line); // Get the neuronal structure.
+		neuron.buildFromLine(input_line); // Build the neuronal structure.
 
 		// Generate thalamic input.
 		if (neuron.type.equals("e")) {

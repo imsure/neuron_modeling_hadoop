@@ -23,10 +23,16 @@ public class Neuron {
 	public String fired; // A neuron fired or not.
 	public double current = 0.0; // Thalamic input current
 
-	public Neuron(String neuron) {
-		synaptic_connection = new double[Model.NUM_OF_NEURONS];
+	public Neuron() {
+		synaptic_connection = new double[Model.NUM_OF_NEURONS];		
+	}
 
-		String[] elems = neuron.split(";");
+	/*
+	 * Build a neuron structure from 'line'.
+	 */
+	public void buildFromLine(String line) {
+		
+		String[] elems = line.split(";");
 
 		/*
 		 * Convert and assign corresponding values to the fields.
@@ -49,7 +55,7 @@ public class Neuron {
 
 		fired = elems[11];
 	}
-
+	
 	/*
 	 * Convert the data fields back to a line of string.
 	 */

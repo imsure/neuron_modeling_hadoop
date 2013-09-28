@@ -15,8 +15,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 public class FiredNeuronsMapper 
 extends Mapper<LongWritable, Text, IntWritable, LongWritable> {
 
-	private Neuron neuron; // Complex object used to store data structure of a neuron.
-	LongWritable neuron_id = new LongWritable();
+	private Neuron neuron = new Neuron(); // Complex object used to store data structure of a neuron.
+	private LongWritable neuron_id = new LongWritable();
+	private IntWritable time = new IntWritable();
 	
 	/*
 	 * The Mapper emits number of iteration (how many milliseconds have gone)
@@ -27,11 +28,12 @@ extends Mapper<LongWritable, Text, IntWritable, LongWritable> {
 			throws IOException, InterruptedException {
 
 		String line = value.toString();
-		neuron = new Neuron(line); // Get the neuron structure
+		neuron.buildFromLine(line); // Get the neuron structure
 		
-		neuron_id.set(neuron.id);
 		if (neuron.fired.equals("Y")) {
-			context.write(new IntWritable(neuron.iter_num), neuron_id);
+			neuron_id.set(neuron.id);
+			time.set(neuron.iter_num);
+			context.write(time, neuron_id);
 		}
 	}
 }

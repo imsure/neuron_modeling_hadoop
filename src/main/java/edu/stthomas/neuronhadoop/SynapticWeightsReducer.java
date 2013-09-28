@@ -13,7 +13,7 @@ import java.io.IOException;
 public class SynapticWeightsReducer 
 extends Reducer<LongWritable, Text, NullWritable, Text> {
 
-	private Neuron neuron; // Complex object used to store recoveried neuron data structure. 
+	private Neuron neuron = new Neuron(); // Complex object used to store recoveried neuron data structure. 
 	private Text neuron_string = new Text();
 	
 	/*
@@ -41,7 +41,7 @@ extends Reducer<LongWritable, Text, NullWritable, Text> {
 		for (Text value : values) {
 			line = value.toString();
 			if (isNeuron(line) == true) {
-				neuron = new Neuron(line); // Get the complex object of neuron.
+				neuron.buildFromLine(line); // Get the complex object of neuron.
 			} else { // Adds up synaptic connection weight from neurons that have fired.
 				weight = Double.parseDouble(line);
 				weight_sum += weight;
