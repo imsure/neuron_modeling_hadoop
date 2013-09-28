@@ -118,6 +118,25 @@ public class Model extends Configured implements Tool {
 			success = job.waitForCompletion(true);
 		}
 		
+		if (success == true) {				
+			Job job = new Job(getConf());
+			job.setJarByClass(Model.class);
+			job.setJobName("Recovery Variable Extraction");
+
+			FileInputFormat.addInputPaths(job, inpaths);
+			FileOutputFormat.setOutputPath(job, new Path(args[4]));
+
+			job.setMapperClass(RVMapper.class);
+			job.setReducerClass(RVReducer.class);
+
+			job.setOutputKeyClass(LongWritable.class);
+			job.setOutputValueClass(Text.class);
+			
+			job.setNumReduceTasks(1);
+			
+			success = job.waitForCompletion(true);
+		}
+		
 		return (success ? 0 : 1);
 	}
 
