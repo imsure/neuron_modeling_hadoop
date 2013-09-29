@@ -10,7 +10,7 @@ hadoop fs -mkdir in-dir
 hadoop fs -put input_by_py/neurons.txt in-dir
 
 START=$(date +%s)
-hadoop jar neuron_modeling_hadoop-1.0.jar edu.stthomas.neuronhadoop.Model in-dir out-dir firings potentials recoveries
+hadoop jar neuron_modeling_hadoop-1.0.jar edu.stthomas.neuronhadoop.Model -D mapred.reduce.tasks=10 in-dir out-dir firings potentials recoveries
 END=$(date +%s)
 
 TIME_DIFF=$(( $END - $START ))
