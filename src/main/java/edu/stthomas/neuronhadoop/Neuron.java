@@ -19,12 +19,10 @@ public class Neuron {
 	public double recovery_var = 0.0;
 	public double potential = 0.0;
 	public double synaptic_sum = 0.0;
-	public double[] synaptic_connection;
 	public String fired; // A neuron fired or not.
 	public double current = 0.0; // Thalamic input current
 
 	public Neuron() {
-		synaptic_connection = new double[Model.NUM_OF_NEURONS];		
 	}
 
 	/*
@@ -48,12 +46,7 @@ public class Neuron {
 		potential = Double.parseDouble(elems[8]);
 		synaptic_sum = Double.parseDouble(elems[9]);
 
-		String[] connections = elems[10].split(",");
-		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
-			synaptic_connection[i] = Double.parseDouble(connections[i]);
-		}
-
-		fired = elems[11];
+		fired = elems[10];
 	}
 	
 	/*
@@ -73,13 +66,7 @@ public class Neuron {
 		update += Double.toString(this.potential) + ";";
 		update += Double.toString(this.synaptic_sum) + ";";
 
-		for (int i = 0; i < (Model.NUM_OF_NEURONS-1); i++) {
-			update += Double.toString(this.synaptic_connection[i]) + ",";
-		}
-		// Don't forget the last one without a trailing comma.
-		update += Double.toString(this.synaptic_connection[Model.NUM_OF_NEURONS-1]);
-
-		update += ";" + this.fired;
+		update += this.fired;
 
 		return update;
 	}
