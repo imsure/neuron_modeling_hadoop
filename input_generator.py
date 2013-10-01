@@ -102,8 +102,8 @@ def get_weights(num_of_neurons, neuron_type):
 
     
 def main():
-    Ne = 400 # Number of Excitatory neurons
-    Ni = 100 # Number of Inhibitory neurons
+    Ne = 800 # Number of Excitatory neurons
+    Ni = 200 # Number of Inhibitory neurons
 
     SUM = 0 # Initial summation of synaptic connection is 0.
 
@@ -117,8 +117,10 @@ def main():
         
     os.mkdir(input_dir)
 
-    fname = os.path.join(input_dir, 'neurons.txt')
-    fp = open(fname, 'w')
+    fname_neuron = os.path.join(input_dir, 'neurons.txt')
+    fp_neuron = open(fname_neuron, 'w')
+    fname_matrix = os.path.join(input_dir, 'weight_matrix.txt')
+    fp_matrix = open(fname_matrix, 'w')
     neuron_type = ''
     for neuron_id in range(0, Ne+Ni):
         ## Neuron ID, starts from 1
@@ -141,13 +143,16 @@ def main():
         line += str(u[neuron_id]) + ';'
         line += str(v[neuron_id]) + ';'
         line += '0' + ';' # Initial summation of synaptic connection is 0
-        line += ','.join(map(str, get_weights(Ne+Ni, neuron_type)))
+        line += 'N\n' # intitial, all neurons are not fired. 'Y' represents fired.
 
-        line += ';N\n' # intitial, all neurons are not fired. 'Y' represents fired.
+        fp_neuron.write(line)
 
-        fp.write(line)
+        weights = ','.join(map(str, get_weights(Ne+Ni, neuron_type)))
+        fp_matrix.write(weights)
 
-    fp.close()
+    fp_neuron.close()
+    fp_matrix.close()
+
 
 if __name__ == '__main__':
     main()
