@@ -148,6 +148,7 @@ def main():
         fp_neuron.write(line)
 
         weights = ','.join(map(str, get_weights(Ne+Ni, neuron_type)))
+        weights += '\n'
         fp_matrix.write(weights)
 
     fp_neuron.close()

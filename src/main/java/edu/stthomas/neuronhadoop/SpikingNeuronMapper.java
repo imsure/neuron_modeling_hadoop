@@ -10,11 +10,9 @@ package edu.stthomas.neuronhadoop;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import java.io.*;
 import java.util.*;
-import java.io.*;
 
 /*
  * Input key is the line number and value is the line content.
@@ -77,12 +75,12 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 
 		// Check if the neuron has fired.
 		if (neuron.potential >= 30.0) { // fired
-			double[] weights = weight_matrix.getWeightsByID(neuron.id);
+			ArrayList<Double> weights = weight_matrix.getWeightsByID(neuron.id);
 			Text firing = new Text();
 			// Emit firing information needed for the next iteration.
 			for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
-				if (Math.abs(weights[i]) > 0.0) {
-					firing.set(Double.toString(weights[i]));
+				if (Math.abs(weights.get(i)) > 0.0) {
+					firing.set(Double.toString(weights.get(i)));
 					neuron_id.set(i+1); // ID starts from 1
 					// Emit synaptic weight to neurons that connect with the fired neuron. 
 					context.write(neuron_id, firing);

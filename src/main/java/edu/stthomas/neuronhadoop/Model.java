@@ -18,7 +18,7 @@ public class Model extends Configured implements Tool {
 
 	private String IN;
 	private String OUT;
-	public final static int NUM_OF_NEURONS = 500;
+	public final static int NUM_OF_NEURONS = 1000;
 	public final static int TIME_IN_MS = 100;
 
 	public int run(String[] args) throws Exception {
@@ -48,7 +48,7 @@ public class Model extends Configured implements Tool {
 
 			Job job = new Job(getConf());
 			job.setJarByClass(Model.class);
-			job.setJobName("Izhikevich Model");
+			job.setJobName("Neuron Modeling:" + timer + "ms");
 
 			FileInputFormat.addInputPath(job, new Path(inpath));
 			FileOutputFormat.setOutputPath(job, new Path(outpath));
