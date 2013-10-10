@@ -31,7 +31,7 @@ public class SynapticWeightMatrix {
 	public ArrayList<Double> getWeightsByID(long id) {
 		ArrayList<Double> weights = new ArrayList<Double>();
 		
-		System.out.println("Size of the array list: " + this.synaptic_connection.size());
+		//System.out.println("Size of the array list: " + this.synaptic_connection.size());
 		String[] connections = this.synaptic_connection.get((int)id-1).split(",");
 		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
 			weights.add(Double.parseDouble(connections[i]));

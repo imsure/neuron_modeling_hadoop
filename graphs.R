@@ -1,7 +1,7 @@
 jpeg('./output/firing.jpg')
 firing = read.table('./output/firings.txt', header=FALSE, sep='\t', col.names=c('time','id'))
 
-plot(firing$time, firing$id, xlim=c(1, 100), ylim=c(1, 500), main='Neuron Firings',
+plot(firing$time, firing$id, xlim=c(1, 100), ylim=c(1, 1000), main='Neuron Firings',
      xlab='Time (ms)', ylab='Neuron ID', col='blue', pch=19, cex=.2)
 dev.off()
 

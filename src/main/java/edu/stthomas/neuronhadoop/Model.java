@@ -19,7 +19,7 @@ public class Model extends Configured implements Tool {
 	private String IN;
 	private String OUT;
 	public final static int NUM_OF_NEURONS = 1000;
-	public final static int TIME_IN_MS = 100;
+	public final static int TIME_IN_MS = 20;
 
 	public int run(String[] args) throws Exception {
 

@@ -22,6 +22,9 @@ public class Neuron {
 	public String fired; // A neuron fired or not.
 	public double current = 0.0; // Thalamic input current
 
+	public StringBuilder sb = new StringBuilder(60); // used for string concatenation to improve performance.
+													 // 60 is pre-calculated based on the size of input record.
+	
 	public Neuron() {
 	}
 
@@ -53,21 +56,19 @@ public class Neuron {
 	 * Convert the data fields back to a line of string.
 	 */
 	public String toLineFormat() {
-		String update = new String();
+		
+		sb.delete(0, 60); // sb is used for many times, so we need to make sure it is reset before using.
+		sb.append(this.id).append(';'); // Note: using a single char is more efficient than ";"
+		sb.append(this.iter_num).append(';');
+		sb.append(this.param_a).append(';');
+		sb.append(this.param_b).append(';');
+		sb.append(this.param_c).append(';');
+		sb.append(this.param_d).append(';');
+		sb.append(this.recovery_var).append(';');
+		sb.append(this.potential).append(';');
+		sb.append(this.synaptic_sum).append(';');
+		sb.append(this.fired);
 
-		update += Long.toString(this.id) + ";";
-		update += this.type + ";";
-		update += Integer.toString(this.iter_num) + ";";
-		update += Double.toString(this.param_a) + ";";
-		update += Double.toString(this.param_b) + ";";
-		update += Double.toString(this.param_c) + ";";
-		update += Double.toString(this.param_d) + ";";
-		update += Double.toString(this.recovery_var) + ";";
-		update += Double.toString(this.potential) + ";";
-		update += Double.toString(this.synaptic_sum) + ";";
-
-		update += this.fired;
-
-		return update;
+		return sb.toString();
 	}
 }
