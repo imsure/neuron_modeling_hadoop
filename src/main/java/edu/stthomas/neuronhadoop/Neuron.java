@@ -57,8 +57,9 @@ public class Neuron {
 	 */
 	public String toLineFormat() {
 		
-		sb.delete(0, 60); // sb is used for many times, so we need to make sure it is reset before using.
+		sb.setLength(0); // sb is used for many times, so we need to make sure it is reset before using.
 		sb.append(this.id).append(';'); // Note: using a single char is more efficient than ";"
+		sb.append(this.type).append(';');
 		sb.append(this.iter_num).append(';');
 		sb.append(this.param_a).append(';');
 		sb.append(this.param_b).append(';');
