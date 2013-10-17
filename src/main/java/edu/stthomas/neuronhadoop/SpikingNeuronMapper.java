@@ -7,11 +7,15 @@ package edu.stthomas.neuronhadoop;
  * to the Reducer.
  */
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.io.MapFile;
 
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 
 /*
@@ -28,8 +32,10 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	private String update; // hold updated neuronal information.
 	private LongWritable neuron_id = new LongWritable();
 	private Text neuron_string = new Text();
-	private SynapticWeightMatrix weight_matrix;
-
+	//private SynapticWeightMatrix weight_matrix;
+	private MapFile.Reader matrix_reader;
+	private Text weightArray = new Text();
+	
 	private double getGaussian() {
 		return randn.nextGaussian();
 	}
@@ -37,10 +43,23 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	@Override
 	public void setup(Context context)
 			throws IOException, InterruptedException {
-		weight_matrix = new SynapticWeightMatrix();
-		weight_matrix.init(new File("weight_matrix.txt"));
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(URI.create("weight_matrix.m"), conf);
+		matrix_reader = new MapFile.Reader(fs, "weight_matrix.m", conf);
 	}
-	
+
+	private ArrayList<Double> getWeightsByID(LongWritable id) throws IOException {
+		ArrayList<Double> weights = new ArrayList<Double>();
+
+		this.matrix_reader.get(neuron_id, this.weightArray);
+		String[] connections = this.weightArray.toString().split(",");
+		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
+			weights.add(Double.parseDouble(connections[i]));
+		}
+
+		return weights;
+	}
+
 	@Override
 	/*
 	 * map method will be called for each input <key, value> pair.
@@ -73,9 +92,12 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		neuron.synaptic_sum = 0.0;
 		neuron.fired = "N"; // Reset firing status
 
+		// Construct the key
+		neuron_id.set(neuron.id);
+
 		// Check if the neuron has fired.
 		if (neuron.potential >= 30.0) { // fired
-			ArrayList<Double> weights = weight_matrix.getWeightsByID(neuron.id);
+			ArrayList<Double> weights = getWeightsByID(neuron_id);
 			Text firing = new Text();
 			// Emit firing information needed for the next iteration.
 			for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
@@ -96,8 +118,6 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		// Convert to line format.
 		update = neuron.toLineFormat();
 
-		// Construct the key
-		neuron_id.set(neuron.id);
 		// At last, emit the updated data structure of the neuron as the value.
 		neuron_string.set(update);
 		context.write(neuron_id, neuron_string);
