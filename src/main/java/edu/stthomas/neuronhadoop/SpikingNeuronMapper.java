@@ -29,7 +29,6 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	private Neuron neuron = new Neuron(); // Complex object represents neuronal structure.
 	private Random randn = new Random();
 	private String input_line; // original input
-	private String update; // hold updated neuronal information.
 	private LongWritable neuron_id = new LongWritable();
 	private Text neuron_string = new Text();
 	//private SynapticWeightMatrix weight_matrix;
@@ -127,14 +126,11 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 			neuron.fired = "Y"; // Update the firing status
 		}
 
-		// Convert to line format.
-		update = neuron.toLineFormat();
-
 		// Construct the key
 		neuron_id.set(neuron.id);
 				
 		// At last, emit the updated data structure of the neuron as the value.
-		neuron_string.set(update);
+		neuron_string.set(neuron.toLineFormat());
 		context.write(neuron_id, neuron_string);
 	}
 }
