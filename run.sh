@@ -6,11 +6,9 @@ hadoop fs -rm -r firings
 hadoop fs -rm -r potentials
 hadoop fs -rm -r recoveries
 hadoop fs -rm -r in-dir
-hadoop fs -mkdir in-dir
-hadoop fs -put input_by_py/neurons.txt in-dir
 
 START=$(date +%s)
-hadoop jar neuron_modeling_hadoop-1.0.jar edu.stthomas.neuronhadoop.Model -D mapred.reduce.tasks=10 -files input_by_py/weight_matrix.txt in-dir out-dir firings potentials recoveries
+hadoop jar neuron_modeling_hadoop-1.0.jar edu.stthomas.neuronhadoop.Model -D mapred.reduce.tasks=32 neurons out-dir firings potentials recoveries
 END=$(date +%s)
 
 TIME_DIFF=$(( $END - $START ))

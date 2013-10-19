@@ -36,6 +36,11 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	private MapFile.Reader matrix_reader;
 	private Text weightArray = new Text();
 	
+	// Counter for empty strings
+	enum EmptyString {
+		EMPTY_STRING
+	}
+	
 	private double getGaussian() {
 		return randn.nextGaussian();
 	}
@@ -48,12 +53,19 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		matrix_reader = new MapFile.Reader(fs, "weight_matrix.m", conf);
 	}
 
-	private ArrayList<Double> getWeightsByID(LongWritable id) throws IOException {
+	private ArrayList<Double> getWeightsByID(LongWritable id, Context context) throws IOException {
 		ArrayList<Double> weights = new ArrayList<Double>();
 
 		this.matrix_reader.get(neuron_id, this.weightArray);
 		String[] connections = this.weightArray.toString().split(",");
 		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
+			if (connections[i].isEmpty()) {
+				context.setStatus("Empty string found!!! Reasons not clear.");
+				context.getCounter(EmptyString.EMPTY_STRING).increment(1);
+				System.out.println("Index of weight: " + i);
+				System.out.println("Neuron ID: " + id.get());
+				//continue;
+			}
 			weights.add(Double.parseDouble(connections[i]));
 		}
 
@@ -92,12 +104,12 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		neuron.synaptic_sum = 0.0;
 		neuron.fired = "N"; // Reset firing status
 
-		// Construct the key
+		// Construct the neuron ID for the MapFile lookup.
 		neuron_id.set(neuron.id);
 
 		// Check if the neuron has fired.
 		if (neuron.potential >= 30.0) { // fired
-			ArrayList<Double> weights = getWeightsByID(neuron_id);
+			ArrayList<Double> weights = getWeightsByID(neuron_id, context);
 			Text firing = new Text();
 			// Emit firing information needed for the next iteration.
 			for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
@@ -118,6 +130,9 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		// Convert to line format.
 		update = neuron.toLineFormat();
 
+		// Construct the key
+		neuron_id.set(neuron.id);
+				
 		// At last, emit the updated data structure of the neuron as the value.
 		neuron_string.set(update);
 		context.write(neuron_id, neuron_string);
