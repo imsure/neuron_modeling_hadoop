@@ -25,8 +25,7 @@ public class Neuron {
 	public StringBuilder sb = new StringBuilder(60); // used for string concatenation to improve performance.
 													 // 60 is pre-calculated based on the size of input record.
 	
-	public Neuron() {
-	}
+	public Neuron() {}
 
 	/*
 	 * Build a neuron structure from 'line'.
@@ -61,13 +60,13 @@ public class Neuron {
 		sb.append(this.id).append(';'); // Note: using a single char is more efficient than ";"
 		sb.append(this.type).append(';');
 		sb.append(this.iter_num).append(';');
-		sb.append(this.param_a).append(';');
-		sb.append(this.param_b).append(';');
-		sb.append(this.param_c).append(';');
-		sb.append(this.param_d).append(';');
-		sb.append(this.recovery_var).append(';');
-		sb.append(this.potential).append(';');
-		sb.append(this.synaptic_sum).append(';');
+		sb.append(String.format("%.2f", param_a)).append(';');
+		sb.append(String.format("%.2f", param_b)).append(';');
+		sb.append(String.format("%.2f", param_c)).append(';');
+		sb.append(String.format("%.2f", param_d)).append(';');
+		sb.append(String.format("%.2f", recovery_var)).append(';');
+		sb.append(String.format("%.2f", potential)).append(';');
+		sb.append(String.format("%.2f", synaptic_sum)).append(';');
 		sb.append(this.fired);
 
 		return sb.toString();
