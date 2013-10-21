@@ -52,21 +52,10 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		matrix_reader = new MapFile.Reader(fs, "weight_matrix.m", conf);
 	}
 
-	private ArrayList<Double> getWeightsByID(LongWritable id, Context context) throws IOException {
-		ArrayList<Double> weights = new ArrayList<Double>();
+	private String[] getWeightsByID(LongWritable id) throws IOException {
 
 		this.matrix_reader.get(neuron_id, this.weightArray);
-		String[] connections = this.weightArray.toString().split(",");
-		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
-			if (connections[i].isEmpty()) {
-				context.setStatus("Empty string found!!! Reasons not clear.");
-				context.getCounter(EmptyString.EMPTY_STRING).increment(1);
-				System.out.println("Index of weight: " + i);
-				System.out.println("Neuron ID: " + id.get());
-				//continue;
-			}
-			weights.add(Double.parseDouble(connections[i]));
-		}
+		String[] weights = this.weightArray.toString().split(",");
 
 		return weights;
 	}
@@ -108,16 +97,16 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 
 		// Check if the neuron has fired.
 		if (neuron.potential >= 30.0) { // fired
-			ArrayList<Double> weights = getWeightsByID(neuron_id, context);
+			String[] weights = getWeightsByID(neuron_id);
 			Text firing = new Text();
 			// Emit firing information needed for the next iteration.
 			for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
-				if (Math.abs(weights.get(i)) > 0.0) {
-					firing.set(Double.toString(weights.get(i)));
-					neuron_id.set(i+1); // ID starts from 1
-					// Emit synaptic weight to neurons that connect with the fired neuron. 
-					context.write(neuron_id, firing);
-				}
+				//if (Math.abs(weights[i]) > 0.0) {
+				firing.set(weights[i]);
+				neuron_id.set(i+1); // ID starts from 1
+				// Emit synaptic weight to neurons that connect with the fired neuron. 
+				context.write(neuron_id, firing);
+				//}
 			}
 
 			// Reset the membrane potential (voltage) and membrane recovery variable after firing.

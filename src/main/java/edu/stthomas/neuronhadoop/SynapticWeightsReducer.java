@@ -51,11 +51,8 @@ extends Reducer<LongWritable, Text, NullWritable, Text> {
 		// Update synaptic connection weights summation.
 		neuron.synaptic_sum = weight_sum;
 
-		//Convert the neuron data structure to a line of string.
-		String update = neuron.toLineFormat();
-
 		// Emit, key is null because neuron id is aleardy inside the value.
-		neuron_string.set(update);
+		neuron_string.set(neuron.toLineFormat());
 		context.write(NullWritable.get(), neuron_string);
 	}
 }

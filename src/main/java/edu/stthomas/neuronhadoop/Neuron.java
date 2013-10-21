@@ -23,15 +23,15 @@ public class Neuron {
 	public double current = 0.0; // Thalamic input current
 
 	public StringBuilder sb = new StringBuilder(60); // used for string concatenation to improve performance.
-													 // 60 is pre-calculated based on the size of input record.
-	
+	// 60 is pre-calculated based on the size of input record.
+
 	public Neuron() {}
 
 	/*
 	 * Build a neuron structure from 'line'.
 	 */
 	public void buildFromLine(String line) {
-		
+
 		String[] elems = line.split(";");
 
 		/*
@@ -50,23 +50,30 @@ public class Neuron {
 
 		fired = elems[10];
 	}
-	
+
 	/*
 	 * Convert the data fields back to a line of string.
 	 */
 	public String toLineFormat() {
-		
+
 		sb.setLength(0); // sb is used for many times, so we need to make sure it is reset before using.
 		sb.append(this.id).append(';'); // Note: using a single char is more efficient than ";"
 		sb.append(this.type).append(';');
 		sb.append(this.iter_num).append(';');
-		sb.append(String.format("%.2f", param_a)).append(';');
-		sb.append(String.format("%.2f", param_b)).append(';');
-		sb.append(String.format("%.2f", param_c)).append(';');
-		sb.append(String.format("%.2f", param_d)).append(';');
-		sb.append(String.format("%.2f", recovery_var)).append(';');
-		sb.append(String.format("%.2f", potential)).append(';');
-		sb.append(String.format("%.2f", synaptic_sum)).append(';');
+		sb.append(param_a).append(';');
+		sb.append(param_b).append(';');
+		sb.append(param_c).append(';');
+		sb.append(param_d).append(';');
+		sb.append(recovery_var).append(';');
+		sb.append(potential).append(';');
+		sb.append(synaptic_sum).append(';');
+		//sb.append(String.format("%.2f", param_a)).append(';');
+		//sb.append(String.format("%.2f", param_b)).append(';');
+		//sb.append(String.format("%.2f", param_c)).append(';');
+		//sb.append(String.format("%.2f", param_d)).append(';');
+		//sb.append(String.format("%.2f", recovery_var)).append(';');
+		//sb.append(String.format("%.2f", potential)).append(';');
+		//sb.append(String.format("%.2f", synaptic_sum)).append(';');
 		sb.append(this.fired);
 
 		return sb.toString();
