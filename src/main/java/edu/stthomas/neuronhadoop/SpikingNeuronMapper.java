@@ -34,12 +34,13 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	//private SynapticWeightMatrix weight_matrix;
 	private MapFile.Reader matrix_reader;
 	private Text weightArray = new Text();
-	
+	private Map<Integer, Double> weight_map; // For in-mapper combiner
+
 	// Counter for empty strings
 	enum EmptyString {
 		EMPTY_STRING
 	}
-	
+
 	private double getGaussian() {
 		return randn.nextGaussian();
 	}
@@ -47,16 +48,27 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	@Override
 	public void setup(Context context)
 			throws IOException, InterruptedException {
+		/*
+		 * Set up MapFile for synaptic weight matrix lookup.
+		 */
 		Configuration conf = new Configuration();
 		String mapfile = "weight_matrix_100000.m";
 		FileSystem fs = FileSystem.get(URI.create(mapfile), conf);
 		matrix_reader = new MapFile.Reader(fs, mapfile, conf);
+
+		// Set up Hash Map for in mapper combiner.
+		this.weight_map = new HashMap<Integer, Double>();
 	}
 
-	private String[] getWeightsByID(LongWritable id) throws IOException {
+	private ArrayList<Double> getWeightsByID(LongWritable id) throws IOException {
+		ArrayList<Double> weights = new ArrayList<Double>();
 
+		this.weightArray.clear();
 		this.matrix_reader.get(neuron_id, this.weightArray);
-		String[] weights = this.weightArray.toString().split(",");
+		String[] connections = this.weightArray.toString().split(",");
+		for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
+			weights.add(Double.parseDouble(connections[i]));
+		}
 
 		return weights;
 	}
@@ -98,16 +110,18 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 
 		// Check if the neuron has fired.
 		if (neuron.potential >= 30.0) { // fired
-			String[] weights = getWeightsByID(neuron_id);
-			Text firing = new Text();
-			// Emit firing information needed for the next iteration.
+			ArrayList<Double> weights = getWeightsByID(neuron_id);
+
+			// In Mapper combiner
 			for (int i = 0; i < Model.NUM_OF_NEURONS; i++) {
-				//if (Math.abs(weights[i]) > 0.0) {
-				firing.set(weights[i]);
-				neuron_id.set(i+1); // ID starts from 1
-				// Emit synaptic weight to neurons that connect with the fired neuron. 
-				context.write(neuron_id, firing);
-				//}
+				Double accumulated_weight = this.weight_map.get(i+1);
+				double current_weight = weights.get(i);
+				if (accumulated_weight == null) {
+					this.weight_map.put(i+1, current_weight);
+				} else {
+					this.weight_map.put(i+1, accumulated_weight+current_weight);
+				}
+
 			}
 
 			// Reset the membrane potential (voltage) and membrane recovery variable after firing.
@@ -117,10 +131,25 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		}
 
 		// Construct the key
-		neuron_id.set(neuron.id);
-				
+		//neuron_id.set(neuron.id);
+
 		// At last, emit the updated data structure of the neuron as the value.
 		neuron_string.set(neuron.toLineFormat());
 		context.write(neuron_id, neuron_string);
 	}
+
+	@Override
+	public void cleanup(Context context)
+			throws IOException, InterruptedException {
+		Text firing = new Text();
+		LongWritable neuron_id = new LongWritable();
+
+		for (Map.Entry<Integer, Double> entry : this.weight_map.entrySet()) {
+			neuron_id.set(entry.getKey());
+			firing.set(Double.toString(entry.getValue()));
+			// Emit 
+			context.write(neuron_id, firing);
+		}
+	}
+
 }
