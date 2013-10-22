@@ -64,16 +64,16 @@ public class Neuron {
 		sb.append(param_b).append(';');
 		sb.append(param_c).append(';');
 		sb.append(param_d).append(';');
-		sb.append(recovery_var).append(';');
-		sb.append(potential).append(';');
-		sb.append(synaptic_sum).append(';');
+		//sb.append(recovery_var).append(';');
+		//sb.append(potential).append(';');
+		//sb.append(synaptic_sum).append(';');
 		//sb.append(String.format("%.2f", param_a)).append(';');
 		//sb.append(String.format("%.2f", param_b)).append(';');
 		//sb.append(String.format("%.2f", param_c)).append(';');
 		//sb.append(String.format("%.2f", param_d)).append(';');
-		//sb.append(String.format("%.2f", recovery_var)).append(';');
-		//sb.append(String.format("%.2f", potential)).append(';');
-		//sb.append(String.format("%.2f", synaptic_sum)).append(';');
+		sb.append(String.format("%.3f", recovery_var)).append(';');
+		sb.append(String.format("%.3f", potential)).append(';');
+		sb.append(String.format("%.3f", synaptic_sum)).append(';');
 		sb.append(this.fired);
 
 		return sb.toString();

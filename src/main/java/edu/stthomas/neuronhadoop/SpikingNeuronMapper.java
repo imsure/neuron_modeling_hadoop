@@ -48,8 +48,9 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 	public void setup(Context context)
 			throws IOException, InterruptedException {
 		Configuration conf = new Configuration();
-		FileSystem fs = FileSystem.get(URI.create("weight_matrix.m"), conf);
-		matrix_reader = new MapFile.Reader(fs, "weight_matrix.m", conf);
+		String mapfile = "weight_matrix_100000.m";
+		FileSystem fs = FileSystem.get(URI.create(mapfile), conf);
+		matrix_reader = new MapFile.Reader(fs, mapfile, conf);
 	}
 
 	private String[] getWeightsByID(LongWritable id) throws IOException {
@@ -73,7 +74,7 @@ extends Mapper<LongWritable, Text, LongWritable, Text> {
 		// Generate thalamic input.
 		if (neuron.type.equals("e")) {
 			neuron.current = 5 * this.getGaussian();
-		} else if (neuron.type.equals("i")) {
+		} else {
 			neuron.current = 2 * this.getGaussian();
 		}
 
